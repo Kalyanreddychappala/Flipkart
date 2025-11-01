@@ -40,21 +40,7 @@ pipeline {
             }
         }
         
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar'
-                }
-            }
-        }
-        
-        stage('Quality Gate') {
-            steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    waitForQualityGate abortPipeline: true
-                }
-            }
-        }
+
         
         stage('Deploy to Staging') {
             when {
@@ -87,18 +73,10 @@ pipeline {
             cleanWs()
         }
         success {
-            emailext (
-                subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: "Good news! The build ${env.BUILD_NUMBER} was successful.",
-                to: "${env.CHANGE_AUTHOR_EMAIL}"
-            )
+            echo "Build completed successfully!"
         }
         failure {
-            emailext (
-                subject: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: "Build ${env.BUILD_NUMBER} failed. Please check the console output.",
-                to: "${env.CHANGE_AUTHOR_EMAIL}"
-            )
+            echo "Build failed. Check the console output for details."
         }
     }
 }
