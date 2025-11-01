@@ -14,13 +14,13 @@ pipeline {
         
         stage('Build') {
             steps {
-                bat 'mvn clean compile'
+                sh 'mvn clean compile'
             }
         }
         
         stage('Test') {
             steps {
-                bat 'mvn test'
+                sh 'mvn test'
             }
             post {
                 always {
@@ -39,7 +39,7 @@ pipeline {
         
         stage('Package') {
             steps {
-                bat 'mvn package -DskipTests'
+                sh 'mvn package -DskipTests'
             }
             post {
                 success {
@@ -51,7 +51,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    bat 'mvn sonar:sonar'
+                    sh 'mvn sonar:sonar'
                 }
             }
         }
@@ -69,7 +69,7 @@ pipeline {
                 branch 'develop'
             }
             steps {
-                bat '''
+                sh '''
                     echo "Deploying to staging environment"
                     java -jar target/Flipkart-0.0.1-SNAPSHOT.jar --spring.profiles.active=staging
                 '''
@@ -82,7 +82,7 @@ pipeline {
             }
             steps {
                 input message: 'Deploy to production?', ok: 'Deploy'
-                bat '''
+                sh '''
                     echo "Deploying to production environment"
                     java -jar target/Flipkart-0.0.1-SNAPSHOT.jar --spring.profiles.active=prod
                 '''
